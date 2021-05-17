@@ -1,0 +1,23 @@
+{
+  "name": "gmailsend",
+  "version": "1.0.0",
+  "description": "Send Email using Gmail REST API & OAuth 2.0 without using Google CLient Library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "Gmail",
+    "OAuth",
+    "2.0",
+    "Send",
+    "Email",
+    "REST",
+    "API"
+  ],
+  "author": "Rupjyoti Nath",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
+}
