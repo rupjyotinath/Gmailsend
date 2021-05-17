@@ -1,6 +1,9 @@
 const express=require('express');
 const router=express.Router();
 const crypto=require('crypto');
+const jwt=require('jsonwebtoken');
+const fs=require('fs')
+const path=require('path');
 const GoogleOAuth=require('../GoogleOAuth2.0');
 
 const credentials=require('../credentials.json');
@@ -35,15 +38,41 @@ router.get('/gmail/callback',async (req,res)=>{
     const authCode=req.query.code;
 
     // GET ACCESS & REFRESH TOKEN
+    // ALSO ID Token for email id
     try{
         const response=await googleOAuth.getToken(authCode);
-        console.log(response.data);
+        // console.log(response.data);
+
+        // Decode the Id Token to get email
+        const idToken=response.data.id_token;
+        const decoded=jwt.decode(idToken);
+
+        // Get email
+        const emailId=decoded.email;
+        console.log(emailId);
+
+        // Will add an API key so only with API key, email sending request can be made to the API of this application
+        const apiKey=crypto.randomBytes(12).toString('hex')
+
+        // Save the tokens 
+        // The file name would be apiKey itself , & will add email to the tokens
+        const tokens=response.data;
+        tokens.emailId=emailId;
+
+        try{
+            fs.writeFileSync(path.join(__dirname,'../user_credentials/',`${apiKey}.json`),JSON.stringify(tokens));
+            return res.json({emailId,apiKey});
+        }
+        catch(err){
+            console.log(err);
+            return res.status(500).send("Internal Server Error: Unable to save credentials")
+        }
+
     }
     catch(err){
         console.log(err);
+        res.status(500).send("Internal Server Error")
     }
-    
-    res.json({stateReceived,authCode});
 })
 
 module.exports=router;
