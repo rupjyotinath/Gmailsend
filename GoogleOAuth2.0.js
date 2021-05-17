@@ -1,3 +1,5 @@
+const axios=require('axios');
+
 class GoogleOAuth{
     constructor(credentials){
         this.client_id=credentials.web.client_id;
@@ -9,9 +11,28 @@ class GoogleOAuth{
 
     generateRedirectUrl(state){
         console.log(this.callback_uri);
-        const redirectUrl=this.auth_uri+'?'+"scope="+encodeURIComponent('https://www.googleapis.com/auth/gmail.send')+'&access_type=offline&response_type=code&state='+state+'&redirect_uri='+encodeURIComponent(this.callback_uri)+'&client_id='+this.client_id;
+        const redirectUrl=this.auth_uri+'?'+"scope="+encodeURIComponent('https://www.googleapis.com/auth/gmail.send')+'+openid+email&access_type=offline&response_type=code&state='+state+'&redirect_uri='+encodeURIComponent(this.callback_uri)+'&client_id='+this.client_id;
 
         return redirectUrl;
+    }
+
+    getToken(code){
+        const config={
+            "url":this.token_uri,
+            "method":'post',
+            "responseType":'json',
+            "headers":{"Content-Type":'application/json'},
+            "data":{
+                "code":code,
+                "client_id":this.client_id,
+                "client_secret":this.client_secret,
+                "grant_type":"authorization_code",
+                "redirect_uri":this.callback_uri
+            }
+        };
+
+        // Returning a Promise
+        return axios(config);
     }
 }
 

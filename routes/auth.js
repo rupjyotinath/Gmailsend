@@ -19,7 +19,7 @@ router.get('/google',(req,res)=>{
 })
 
 // GET /authorize/gmail/callback
-router.get('/gmail/callback',(req,res)=>{
+router.get('/gmail/callback',async (req,res)=>{
     // Google sends a error query string in case of error
     if(req.query.error){
         return res.status(401).send(req.query.error);
@@ -33,6 +33,16 @@ router.get('/gmail/callback',(req,res)=>{
     console.log(req.session.state);
 
     const authCode=req.query.code;
+
+    // GET ACCESS & REFRESH TOKEN
+    try{
+        const response=await googleOAuth.getToken(authCode);
+        console.log(response.data);
+    }
+    catch(err){
+        console.log(err);
+    }
+    
     res.json({stateReceived,authCode});
 })
 
