@@ -1,6 +1,7 @@
 const express=require('express');
 const authRoutes=require('./routes/auth');
 const session=require('express-session');
+const gmailRoutes=require('./routes/gmailRoutes');
 
 if(process.env.NODE_ENV!='produnction')
 {
@@ -20,6 +21,7 @@ app.use(session({
 
 //ROUTES
 app.use('/authorize',authRoutes);
+app.use('/gmail',gmailRoutes);
 
 // Handle 404
 app.use('*',(req,res)=>{
