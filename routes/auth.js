@@ -11,6 +11,8 @@ const googleOAuth=new GoogleOAuth(credentials);
 router.get('/google',(req,res)=>{
     const state=crypto.randomBytes(10).toString('hex');
     console.log(state);
+    // Save state parameter to session
+    req.session.state=state;
     const redirectUrl=googleOAuth.generateRedirectUrl(state);
     console.log(redirectUrl);
     res.redirect(redirectUrl);
@@ -24,6 +26,12 @@ router.get('/gmail/callback',(req,res)=>{
     }
 
     const stateReceived=req.query.state;
+    // Verify that received STATE is same
+    if(stateReceived!=req.session.state){
+        return res.status(400).send("Invalid Request")
+    }
+    console.log(req.session.state);
+
     const authCode=req.query.code;
     res.json({stateReceived,authCode});
 })
