@@ -69,6 +69,7 @@ router.post('/send',async (req,res)=>{
             // console.log(err);
             if (error.response) {
                 console.log(error.response.data);
+                console.log(error.response.data.error.errors)
                 console.log(error.response.status);
             } else if (error.request) {
                 console.log(error.request);
