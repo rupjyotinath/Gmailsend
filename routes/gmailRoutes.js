@@ -41,6 +41,11 @@ router.post('/send',async (req,res)=>{
         const data=fs.readFileSync(path.join(__dirname,'../user_credentials/',`${apiKey}.json`));
         const tokensAndEmail=JSON.parse(data);
         // console.log(tokensAndEmail);
+
+        // Verify emailId
+        if(email!=tokensAndEmail.emailId){
+            return res.status(401).send("Invalid email or api key")
+        }
         
         // We need access_token
         let access_token=tokensAndEmail.access_token;
