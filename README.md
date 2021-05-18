@@ -90,8 +90,13 @@ The newlines will be retained.
 **The application gets new access_token if it expires.** So, emails can be continously send without requiring the users to authorize again.
 
 ## Screenshots
+After successful authorization,
 ![getapi](screenshots/apiKey.png)
+
+Postman send request,
 ![postman](screenshots/postman.png)
+
+Received email,
 ![received](screenshots/received_email.png)
 
 ## References
