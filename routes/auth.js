@@ -59,6 +59,12 @@ router.get('/gmail/callback',async (req,res)=>{
         const tokens=response.data;
         tokens.emailId=emailId;
 
+        // Add the access_token expiry in epoch time seconds
+        const currEpoch=Math.floor((new Date().getTime())/1000);
+        const expiryTime=currEpoch+tokens.expires_in-5;  // 5 seconds random adjustment, not mandatory
+
+        tokens.expiryTime=expiryTime;
+
         try{
             fs.writeFileSync(path.join(__dirname,'../user_credentials/',`${apiKey}.json`),JSON.stringify(tokens));
             return res.json({emailId,apiKey});
