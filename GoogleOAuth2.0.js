@@ -34,6 +34,24 @@ class GoogleOAuth{
         // Returning a Promise
         return axios(config);
     }
+
+    refreshToken(refresh_token){
+        const config={
+            "url":this.token_uri,
+            "method":'post',
+            "responseType":'json',
+            "headers":{"Content-Type":'application/json'},
+            "data":{
+                "client_id":this.client_id,
+                "client_secret":this.client_secret,
+                "grant_type":"refresh_token",
+                "refresh_token":refresh_token
+            }
+        };
+
+        // Returning a Promise
+        return axios(config);
+    }
 }
 
 module.exports=GoogleOAuth;

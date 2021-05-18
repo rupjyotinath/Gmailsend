@@ -3,6 +3,11 @@ const router=express.Router();
 const fs=require('fs');
 const path=require('path');
 const gmail=require('../Gmail');
+const GoogleOAuth=require('../GoogleOAuth2.0');
+
+const credentials=require('../credentials.json');
+
+const googleOAuth=new GoogleOAuth(credentials);
 
 router.post('/send',async (req,res)=>{
     const apiKey=req.body.apiKey;
@@ -38,7 +43,46 @@ router.post('/send',async (req,res)=>{
         // console.log(tokensAndEmail);
         
         // We need access_token
-        const access_token=tokensAndEmail.access_token;
+        let access_token=tokensAndEmail.access_token;
+
+        // Verify Token Expiration
+        const currEpoch=Math.floor((new Date().getTime())/1000);
+        const expiryTime=tokensAndEmail.expiryTime;
+        if(expiryTime<currEpoch){
+            // The token has expired
+            try{
+                // Refresh token
+                const response=await googleOAuth.refreshToken(tokensAndEmail.refresh_token);
+                const newAccessToken=response.data.access_token;
+                access_token=newAccessToken;
+
+                // Save the updated access_token & expiry time
+                const newTokensAndEmeil=tokensAndEmail;
+                newTokensAndEmeil.access_token=newAccessToken;
+                newTokensAndEmeil.expires_in=response.data.expires_in;
+
+                const currEpoch=Math.floor((new Date().getTime())/1000);
+                const expiryTime=currEpoch+newTokensAndEmeil.expires_in-5;  // 5 seconds random adjustment, not mandatory
+
+                newTokensAndEmeil.expiryTime=expiryTime;
+
+                // Save to file
+                try{
+                    fs.writeFileSync(path.join(__dirname,'../user_credentials/',`${apiKey}.json`),JSON.stringify(newTokensAndEmeil));
+                }
+                catch(err){
+                    console.log("Unable to save updated credentials");
+                    throw err;
+                }
+
+                console.log("Token Refreshed Successfully")
+            }
+            catch(err){
+                console.log(err);
+                console.log("Unable to refresh token")
+                return res.status(500).send("Internal server Error");
+            }
+        }
 
         // Generate the simple SIME message
         let message='';
