@@ -89,6 +89,11 @@ The newlines will be retained.
 
 **The application gets new access_token if it expires.** So, emails can be continously send without requiring the users to authorize again.
 
+## Screenshots
+![getapi](screenshots/apiKey.png)
+![postman](screenshots/postman.png)
+![received](screenshots/received_email.png)
+
 ## References
 
 * https://developers.google.com/identity/protocols/oauth2/web-server
